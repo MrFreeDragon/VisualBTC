@@ -9,6 +9,8 @@ Project structure:
 4) js/bitcoinJS-lib.js      ---> BitcoinJS-lib v0.1.3-default (ECDSA formulas)
 5) js/QRcode.js             ---> QR Code Generator for JavaScript
 
+Project discussion: https://bitcointalk.org/index.php?topic=5187401.0
+
 This project represents the visual bitcoin private key generator.
 
 [1] General bitcoin information.
