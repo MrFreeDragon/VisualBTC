@@ -1,0 +1,244 @@
+.mainDIVcss {
+ text-align:center;
+ float:none;
+ display:block;
+ margin-left:20px;
+ padding-bottom:30px;
+ width:670px;
+}
+
+.textbox { 
+  border: 1px dotted #000000; 
+  outline:0;
+  height:25px;
+  width: 476px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 20px;
+}
+
+.textboxVis { 
+  border: 1px dotted #FF8000; 
+  outline:0;
+  height:25px;
+  width: 476px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-bottom: 20px;
+  margin-top: 5px;
+  display:inline-block
+}
+
+.textfield { 
+  border: 1px dotted #000000; 
+  outline:0;
+  height:75px;
+  width: 476px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.TextDescr { 
+  border: 0px;
+  border-radius: 13px;
+  resize: none;
+  outline:0;
+  height:75px;
+  width: 660px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color:#FDF4E3;
+  overflow:hidden;
+  color:black;
+}
+
+.TextWarn { 
+  border: 1px solid red;
+  border-radius: 13px;
+  resize: none;
+  outline:0;
+  height:60px;
+  width: 660px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color:#FDF4E3;
+  overflow:hidden;
+  color:red;
+}
+
+.VisWarn { 
+  border: 1px solid orange;
+  border-radius: 7px;
+  resize: none;
+  outline:0;
+  height:30px;
+  width: 560px;
+  padding-left: 11px;
+  padding-right: 11px;
+  background-color:#FDF4E3;
+  overflow:hidden;
+  color:black;
+}
+
+.textfieldPK { 
+  border: 1px dotted #000000; 
+  outline:0;
+  height:30px;
+  width: 484px;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+a.btn {
+  color: #fff;
+  text-decoration: none;
+  user-select: none;
+  background: #FF8000;
+  padding: .33em 1.0em;
+  outline: none;
+  border-width: 1px;
+  border-style: solid red;
+  border-color: #FDBE33 #000 #D77206;
+  border-radius: 8px;
+  transition: 0.2s;
+} 
+a.btn:hover { background: #FFA000; }
+a.btn:active { background: #DAA520; }
+
+.gtr {
+  display: block;
+  line-height: 24px;
+  padding: 12px 15px;
+  cursor: pointer;
+}
+
+.gtr + .gtr {
+  border-top: 1px solid #f0f2f3;
+}
+
+.rtg {
+  display: none;
+}
+
+.mrt {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 12px;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #FF8000;
+  border-radius: 12px;
+}
+
+.mrt:before {
+  content: '';
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -5px 0 0 -6px;
+  height: 4px;
+  width: 8px;
+  border: solid #39ca74;
+  border-width: 0 0 4px 4px;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
+.rtg:checked ~ .mrt {
+  border-color: #39ca74;
+}
+
+.rtg:checked ~ .mrt:before {
+  display: block;
+}
+
+.lst {
+  font-weight: bold;
+  color: #39A9E1;
+}
+.rtg:checked ~ .lst {
+  color: #34bf6e;
+}
+
+.Reslbl {
+ position:absolute;
+ margin-left:10px;
+ margin-top:5px;
+ color:#4682B4;
+}
+
+.ExportDIVField {
+ background-color:#EEE8AA;
+ padding-top:0px;
+ padding-bottom:0px;
+ border: 2px solid orange;
+ border-radius:20px;
+ display:none;
+}
+
+.LabelExp {
+ float:left;
+ padding-left:92px;
+
+}
+
+.printOwnership {
+ font-style:italic;
+}
+
+@media print {
+ .noPrint {display:none}
+ .printThis{display:block;width:670px;margin:0px auto;text-align:center}
+ .printThis a.btn {visibility:hidden}
+ #PrintBtn {visibility:hidden}
+ p.printOwnership {display:block;visibility:visible;position:static; !important}
+}
+
+@media screen {
+ p.printOwnership {display:none;visibility:visible;}
+}
+
+a.AddrLink {
+ text-decoration:none;
+ color:#4682B4;
+}
+
+a.AddrLink:active {
+ color:#FF8C00
+}
+
+a.AddrLink:hover {
+ font-size:115%;
+ border:2px solid orange;
+ border-radius:11px;
+ padding:6px;
+}
+
+.imgPopUp span {
+ visibility: hidden;
+ display: none;
+ position: fixed;
+ bottom: 150px;
+ left: 140px;
+ background: #fff;
+ box-shadow: -3px 4px 12px -2px #333;
+ border:5px solid orange;
+ border-radius: 5px;
+ padding-right: 128px;
+ padding-left: 128px;
+ padding-top: 15px;
+ padding-bottom: 15px;
+}
+ 
+.imgPopUp:hover span{
+ display:block;
+ visibility:visible;
+ overflow:hidden;
+}
+
+.imgPopUp:hover {color:#E88307;}
