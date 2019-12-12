@@ -10,18 +10,30 @@ var c_canvas = document.getElementById("BTCpic");
 var context = c_canvas.getContext("2d");
 var cell = 28;
 var width = cell * 16;
-var cellfillcolour = "green";
-var cellnofillcolour = "white";
+
+var LastCell = [16, 16]; // temp cell value out of range for fill by MouseMove event
+var timer = 0 // tmp variabe for timeout function ID storage
+
+var blockX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //used to block column from filling in advanced option
+var blockY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; //used to block row from filling in advanced option
+var IsLinesBlockOption = false;
+var cellfillcolour = "green"; //cell colour for bit=1
+var cellnofillcolour = "white"; //cell colour for bit=0
+var cellblockcolour = "#a8a8a8"; //cell colour if user blocks the whole line (all bits equals to 1), advanced option
+
 var BTCbin = document.getElementById("BTCb");
 var BTChex = document.getElementById("BTCh");
 var BTCp_gen = document.getElementById("BTCpub");
 var BTCaddr_gen = document.getElementById("BTCaddr");
 var BTCp_c_gen = document.getElementById("BTCpubC");
 var BTCaddr_c_gen = document.getElementById("BTCaddrC");
+var BTCadd_trans = document.getElementById("BTCaddrCheck");
+var BTCadd_c_trans = document.getElementById("BTCaddrCheckC");
 
 var HEXtick = document.getElementById("ownHEX");
 var HEXinput = document.getElementById("BTChIn");
 var HEXform = document.getElementById("ownHEXform"); // includes HEXinput and Visualize btn objects to hide/show them both
+var AdvOptform = document.getElementById("AdvOptDIV"); // includes advanced options to hide/show them both
 
 var ExportKeyType = document.getElementById("IsCompressedExportKey");
 var ExportDIV = document.getElementById("ExportKey");
@@ -32,7 +44,8 @@ var ExportAddr = document.getElementById("AddressExport");
 var PrivKeyCaution = document.getElementById("Caution");
 var BTCOrderBin = "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111010111010101011101101110011100110101011110100100010100000001110111011111111010010010111101000110011010000001101100100000101000000".split("");
 
-var BlockExplorer = "https://btc.com/";
+var BlockExplorer = "https://btc.com/"; // default explorer for transactions/balances overview
+var APIrequestURL = "https://blockchain.info/q/getreceivedbyaddress/" // URL for API request to receive transaction amount
 
 c_canvas.width = width + cell;
 c_canvas.height = width + cell;
@@ -182,6 +195,19 @@ if (!/[^0123456789abcdef]+/i.test(HEXinput.value) && HEXinput.value != "" && HEX
   }
 }
 
+function DisplayAdvOptDIV(){
+if (document.getElementById("AdvOpt").checked) {
+   AdvOptform.style.display = "block";
+   } else {
+   AdvOptform.style.display = "none";
+   }
+}
+
+function ChangeExplorer() {
+  BlockExplorer = document.getElementById("ExplorerSelect").value;
+  calculation();
+}
+
 function ClearAll () {
 for (let i=0; i<16; i++) {
   BTCpk[i] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -191,16 +217,44 @@ calculation();
 HEXinput.value = "";
 BTCbin.textContent = "";
 BTChex.value = "";
+BTCadd_trans.value = "";
+BTCadd_c_trans.value = "";
 LastCell = [16, 16];
 }
 
 function rndPrivKey() {
 for (var x=0; x<16; x++) {for (var y=0; y<16; y++) {
-    BTCpk[y][x] = Math.floor(Math.random() * 2);    
+    if (blockX[x] == 0 && blockY[y] == 0) {BTCpk[y][x] = Math.floor(Math.random() * 2)};
     }}
 fillAllfromArr();
 calculation();
 LastCell = [16, 16];
+}
+
+function InverseKey() {
+for (var x=0; x<16; x++) {for (var y=0; y<16; y++) {
+    if (blockX[x] == 0 && blockY[y] == 0) {BTCpk[y][x] ^= 1};
+    }}
+fillAllfromArr();
+calculation();
+LastCell = [16, 16];
+}
+
+function RotateKey() {
+BTCtmp = JSON.parse(JSON.stringify(BTCpk));
+for (var x=0; x<16; x++) {for (var y=0; y<16; y++) {
+    BTCpk[y][x] = BTCtmp[15-x][y];
+    }}
+UnblockLines(); // Rotation also unblocks lines in order to rotate the pattern key and not loose the bits
+fillAllfromArr();
+calculation();
+LastCell = [16, 16];
+BTCtmp = [];
+}
+
+function UnblockLines() {
+blockX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+blockY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 }
 
 function GenerateExportDIV () {
@@ -289,9 +343,29 @@ function calculation() {
         ExportDIV.style.display = "none";
         document.getElementById("ExploreBTCAddr").href = BlockExplorer + BTCaddr_gen.value;
         document.getElementById("ExploreBTCAddrC").href = BlockExplorer + BTCaddr_c_gen.value;
+        if (document.getElementById("CheckAddrOnline").checked) {AddressCheckOnline(GenResults[1], BTCadd_trans); AddressCheckOnline(GenResults[3], BTCadd_c_trans)};
 }
 
-var LastCell = [16, 16]; // temp cell value out of range for fill by MouseMove event
+// check volume of transactions received by address; no used by default, activated only by advanced options
+function AddressCheckOnline(address, fieldForResult) {
+if (address != "") {
+let xhr = new XMLHttpRequest();
+xhr.open("GET", APIrequestURL+address+"?r="+Math.random(), true);
+xhr.timeout = 3000; //timeout for API request
+xhr.ontimeout = function () {}
+xhr.send();
+xhr.onreadystatechange = function() {
+  if (xhr.readyState !== 4) return; 
+  if (xhr.status === 200) {
+     fieldForResult.value = "\u0243" + " " + xhr.responseText/100000000;
+     if (fieldForResult.value == "\u0243" + " " + "0") {fieldForResult.style.background="none"} else {fieldForResult.style.background="#58fc49"};
+     } else {
+     console.log("HTTP API error on", APIrequestURL, xhr.status, xhr.statusText);
+     fieldForResult.value = "\u0243" + " " + "0";
+     fieldForResult.style.background="none";
+     }
+}
+}}
 
 // Function returns the X and Y of 16x16 array based on mouse position
 function getCellByPosition(X, Y) {
@@ -304,7 +378,9 @@ function getCellByPosition(X, Y) {
 function fillCell(CellToFill) {
 	x = CellToFill[0];
         y = CellToFill[1];
-        if (x < 0 || y < 0 || x > 15 || y > 15 || (x == LastCell[0] && y == LastCell[1])) {return}
+        if ((x == -1 || y == -1) && IsLinesBlockOption) {blockLine(x, y)};
+        if (x < 0 || y < 0 || x > 15 || y > 15 || (x == LastCell[0] && y == LastCell[1])) {return};
+        if (blockX[x] == 1 || blockY[y] == 1) {return};
         if (BTCpk[y][x] == 0) {
            colour = cellfillcolour;
            BTCpk[y][x] = 1;
@@ -315,16 +391,50 @@ function fillCell(CellToFill) {
         context.fillStyle = colour;
         context.fillRect(cell + x * cell, cell + y * cell, cell - 1, cell - 1);
         LastCell = [x, y];
+        if (timer != 0) {clearTimeout(timer)}
+        timer = setTimeout(calculation, 200);
+}
+
+function blockLine(row, column) {
+        if (row == -1 && column == -1) {return};
+        if (row == LastCell[0] && column == LastCell[1]) {return};
+        if (row == -1) {blockY[column] ^= 1; BTCpk[column] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+        if (column == -1) {blockX[row] ^= 1; for (var y=0; y<16; y++) {BTCpk[y][row] = 0}};
+        LastCell = [row, column];
+        fillAllfromArr();
         calculation();
+}
+
+function LinesBlockSwitch() {
+IsLinesBlockOption = document.getElementById("CheckBlockLines").checked;
+if (!IsLinesBlockOption) {UnblockLines(); fillAllfromArr()}
+}
+
+function AddHideTransactionsField() {
+if (document.getElementById("CheckAddrOnline").checked) {
+        BTCadd_trans.style.display="inline-block";
+        BTCadd_c_trans.style.display="inline-block";
+        BTCaddr_gen.style.width="374px";
+        BTCaddr_c_gen.style.width="374px";
+        setTimeout(calculation, 100);
+        }
+        else {
+        BTCadd_trans.style.display="none";
+        BTCadd_c_trans.style.display="none";
+        BTCadd_trans.value = "";
+        BTCadd_c_trans.value = "";
+        BTCaddr_gen.style.width="476px";
+        BTCaddr_c_gen.style.width="476px";
+        }
 }
 
 function fillAllfromArr() {
 for (var x=0; x<16; x++) {for (var y=0; y<16; y++) {
-    if (BTCpk[y][x] == 1) {colour = cellfillcolour} else {colour = cellnofillcolour};
-    context.fillStyle = colour;
-    context.fillRect(cell + x * cell, cell + y * cell, cell - 1, cell - 1);
-    }}
-LastCell = [16, 16];
+        if (BTCpk[y][x] == 1) {colour = cellfillcolour} else {colour = cellnofillcolour};
+        if (blockX[x] == 1 || blockY[y] == 1) {colour = cellblockcolour}
+        context.fillStyle = colour;
+        context.fillRect(cell + x * cell, cell + y * cell, cell - 1, cell - 1);
+        }}
 }
 
 function handleMouseDown(event) { 
@@ -350,7 +460,13 @@ document.getElementById("ownHEX").addEventListener("change", DisplayHEXInput, fa
 document.getElementById("ownHEXbtn").addEventListener("click", visualizeHEX, false);
 document.getElementById("ClearButton").addEventListener("click", ClearAll, false);
 document.getElementById("RandButton").addEventListener("click", rndPrivKey, false);
+document.getElementById("Inverse").addEventListener("click", InverseKey, false);
+document.getElementById("Rotate").addEventListener("click", RotateKey, false);
 document.getElementById("GenQRbtn").addEventListener("click", GenerateExportDIV, false);
 document.getElementById("PrintBtn").addEventListener("click", printDIV, false);
+document.getElementById("AdvOpt").addEventListener("change", DisplayAdvOptDIV, false);
+document.getElementById("ExplorerSelect").addEventListener("change", ChangeExplorer, false);
+document.getElementById("CheckBlockLines").addEventListener("change", LinesBlockSwitch, false);
+document.getElementById("CheckAddrOnline").addEventListener("change", AddHideTransactionsField, false);
 
 ClearAll ();
