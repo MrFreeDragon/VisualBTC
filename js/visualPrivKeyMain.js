@@ -126,23 +126,23 @@ function hex2bin(hex) {
 
 // Function returns uncompressed pubkey, uncompressed address, compressed pubkey annd compressed address
 function LegacyAddr(sec_key) {
-var hash_str = pad(sec_key, 64, "0");
-var hash = Crypto.util.hexToBytes(hash_str);
-eckey = new Bitcoin.ECKey(hash);
-eckey_c = new Bitcoin.ECKey(hash);
-var curve = getSECCurveByName("secp256k1");
-var pt = curve.getG().multiply(eckey.priv);
-eckey_c.pub = getEncoded(pt, true);
-eckey_c.pubKeyHash = Bitcoin.Util.sha256ripe160(eckey_c.pub);
-var hash160 = eckey.getPubKeyHash();
-var hash160_c = eckey_c.getPubKeyHash();
+    var hash_str = pad(sec_key, 64, "0");
+    var hash = Crypto.util.hexToBytes(hash_str);
+    eckey = new Bitcoin.ECKey(hash);
+    eckey_c = new Bitcoin.ECKey(hash);
+    var curve = getSECCurveByName("secp256k1");
+    var pt = curve.getG().multiply(eckey.priv);
+    eckey_c.pub = getEncoded(pt, true);
+    eckey_c.pubKeyHash = Bitcoin.Util.sha256ripe160(eckey_c.pub);
+    var hash160 = eckey.getPubKeyHash();
+    var hash160_c = eckey_c.getPubKeyHash();
 
-var pubkey = Crypto.util.bytesToHex(getEncoded(pt, false));
-var pubkey_c = Crypto.util.bytesToHex(eckey_c.pub);
-var addr = new Bitcoin.Address(hash160);
-var addr_c = new Bitcoin.Address(hash160_c);
+    var pubkey = Crypto.util.bytesToHex(getEncoded(pt, false));
+    var pubkey_c = Crypto.util.bytesToHex(eckey_c.pub);
+    var addr = new Bitcoin.Address(hash160);
+    var addr_c = new Bitcoin.Address(hash160_c);
 
-return [pubkey, addr, pubkey_c, addr_c];
+    return [pubkey, addr, pubkey_c, addr_c];
 }
 
 // Function add ch="0" to make the exact length
@@ -331,7 +331,7 @@ function calculation() {
 	BTCbin.textContent = PrivFromArr();
         BTChex.value = bin2hex(BTCbin.textContent);
         if(!IsInOrder(BTCbin.textContent)) {Caution.style.display = "block";} else {Caution.style.display = "none"};
-        if (BTChex.value == 0) {
+        if (BTCbin.textContent == 0) {
            GenResults = ["", "", "", ""];
            } else {
            GenResults = LegacyAddr(BTChex.value);
