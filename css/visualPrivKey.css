@@ -7,6 +7,17 @@
  width:670px;
 }
 
+h1 {
+  color: #FF8000;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .textbox { 
   border: 1px dotted #000000; 
   outline:0;
@@ -108,7 +119,7 @@ a.btn {
   padding: .33em 1.0em;
   outline: none;
   border-width: 1px;
-  border-style: solid red;
+  border-style: solid;
   border-color: #FDBE33 #000 #D77206;
   border-radius: 8px;
   transition: 0.2s;
@@ -207,7 +218,7 @@ a.btn:active { background: #DAA520; }
  .printThis{display:block;width:670px;margin:0px auto;text-align:center}
  .printThis a.btn {visibility:hidden}
  #PrintBtn {visibility:hidden}
- p.printOwnership {display:block;visibility:visible;position:static; !important}
+ p.printOwnership {display:block;visibility:visible;position:static !important}
 }
 
 @media screen {
