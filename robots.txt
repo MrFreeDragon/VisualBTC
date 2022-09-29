@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /css
+Disallow: /js
+Disallow: /cgi-bin
+Disallow: /.git
+Host: https://btckeygen.com
+Sitemap: http://btckeygen.com/sitemap.xml
